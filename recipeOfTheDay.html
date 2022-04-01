@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Food</title>
+    <style>
+      body{
+        background-image: url(https://images.pexels.com/photos/956999/milky-way-starry-sky-night-sky-star-956999.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500);
+      }
+          #navbar {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 4%;
+        padding-right: 4%;
+      }
+
+      #container {
+        margin-top: 3vh;
+        height:90vh;
+      }
+      .options {
+        display: flex;
+        /* justify-content: space-between; */
+        list-style: none;
+      }
+      .options h3 {
+        padding-left: 30px;
+        padding-right: 10px;
+      }
+      .img_div{
+        height :50%;
+      }
+      .details_div{
+        height:50%;
+        overflow: hidden;
+        text-align: center;
+        padding:4vh;
+        color:white;
+        font-family: "Sans-serif";
+      }
+      img{
+        height:100%;
+        width: 30%;
+        margin-left:35%;
+        border: 1px solid black;
+        border-radius:30%;
+      }
+      p,h4{
+        font-family: "Times New Roman", Times, Monospace;
+        font-size:3vh;
+      }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    <!-- <h1>recipeOftheDay page</h1> -->
+
+    <div id="container"></div>
+</body>
+</html>
+
+<script type="module">
+
+    import navbar from './componants/navbar.js';
+        let header = document.getElementById('header');
+        header.innerHTML = navbar()
+
+        let container = document.getElementById('container');
+    
+      async  function getdata(){
+         let res = await fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+         let data = await res.json();
+         display(data.meals[0])
+        }
+        getdata()
+
+        function display(data){
+          console.log(data)
+
+          let img_div = document.createElement('div');
+          img_div.className = 'img_div'
+          
+         let image = document.createElement('img');
+         image.src = data.strMealThumb;
+            img_div.append(image)
+
+
+        
+          let details_div = document.createElement('div');
+          details_div.className = 'details_div';
+
+
+              
+          let name = document.createElement('h4');
+          name.innerHTML = data.strMeal;
+
+        let type = document.createElement('h4');
+        type.innerHTML = data.strTags;
+
+        let menu = document.createElement('p');
+        menu.innerHTML = data.strInstructions;
+
+        details_div.append(name,type,menu)
+          container.append(img_div,details_div)
+        }
+    </script>

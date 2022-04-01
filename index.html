@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Food</title>
+    <style>
+          #navbar {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 4%;
+        padding-right: 4%;
+        border: solid 1px black;
+      }
+      body{
+        background-image: url(https://media.istockphoto.com/photos/star-field-at-night-picture-id501655522?b=1&k=20&m=501655522&s=170667a&w=0&h=yxV0H4RLzwn_roNsSxejPhL0JAQl7YGguAeL1PtniZw=);
+      }
+      *{
+        font-family: "Sans-serif";
+        font-size:3vh
+      }
+      .options {
+        display: flex;
+        /* justify-content: space-between; */
+        list-style: none;
+      }
+      .options h3 {
+        padding-left: 30px;
+        padding-right: 10px;
+      }
+    
+      #search{
+        margin-top:3vh;
+      }
+      #searchFood{
+         margin:auto;
+         margin-left:30%;
+         width:48vh;
+         padding:2vh;
+      }
+      #something{
+        display:flex;
+      }
+      #something>div{
+        margin:4vh;
+      }
+      #result{
+        height: 70vh;
+        width:fit-content;
+        /* border: solid 1px red; */
+        /* margin:auto; */
+        width:30%;
+        color:white;
+      }
+      .box{
+        width:100%;
+        border: solid 1px black;
+        display: flex;
+        padding:2vh;
+        margin:2vh;
+      }
+      .box>div{
+         margin:2vh;
+         padding:1vh;
+      }
+      #showdata{
+        width:70%;
+        /* height: 70vh; */
+        overflow: hidden;
+        color:white;
+        text-align:center;
+      }
+      h3{
+        margin-left:2vh;
+      }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+    
+    <div id="search">
+      <input type="text" id="searchFood" placeholder="search your food">
+    </div>
+    <div id="something">
+      <div id="result"></div>
+      <div id="showdata"></div>
+    </div>
+    
+</body>
+</html>
+<script type="module">
+
+    import navbar from './componants/navbar.js';
+    let header = document.getElementById('header');
+    header.innerHTML = navbar()
+    
+    // debugger;
+    let timeoutId;
+    // var searchFood = document.getElementById('searchFood').addEventListener('input',getdata,1000)
+    document.getElementById("searchFood").addEventListener("input", () => {
+        debouncing(getdata,1000)
+  });
+    async function getdata(){
+      try{
+
+        let searchBox = document.getElementById('searchFood').value;
+  
+        let res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchBox}`)
+        let data = await res.json()
+        if(data){
+
+          display(data.meals);
+        }
+      }
+      catch(err){
+        console.log(err)
+      }
+    }
+
+ 
+    const display = (data)=>{
+        // console.log(data)
+       result.innerHTML = ''
+        
+       if (data.length>3){
+         result.style.overflowY='scroll';
+       }
+        if (data){
+
+          data.forEach(function(item){
+            console.log(item)
+            let box = document.createElement('div');
+            box.className = 'box';
+
+            // one is for image
+            let food_img = document.createElement('img');
+            food_img.src = item.strMealThumb;
+            food_img.style.width='30%';
+    
+            // for details   
+            
+            
+          let name = document.createElement('h3');
+          name.innerHTML = item.strMeal;
+          
+
+
+            box.append(food_img,name);
+            box.onclick  = function(){
+              showDetails(item)
+            }
+            result.append(box);
+            // console.log(item)
+          });
+        }
+    }
+
+    // getdata() 
+    var result = document.getElementById('result');
+    var showdata = document.getElementById('showdata');
+
+
+    function showDetails(item){
+      showdata.innerHTML = '';
+      let image = document.createElement('img');
+      image.src = item.strMealThumb;
+      image.style.height = '40%';
+      image.style.width = '40%';
+      image.style.marginLeft = '20%';
+      image.style.border = '1vh solid #cecece';
+      image.style.borderRadius = '9%';
+
+
+      showdata.style.border = '1vh solid #cecece';
+      showdata.style.padding = '3vh';
+      showdata.style.borderRadius = '3vh';
+
+
+
+      let name = document.createElement('h3');
+      name.innerHTML = item.strMeal;
+
+     let type = document.createElement('p');
+     type.innerHTML = item.strTags;
+
+     let menu = document.createElement('p');
+     menu.innerHTML = item.strInstructions;
+
+
+      showdata.append(image,name,type,menu);
+      console.log(item)
+    }
+
+
+ 
+
+  function debouncing(callback, delay) {
+    // callback == getdata
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(function () {
+      callback();
+    }, delay);
+  }
+ 
+
+</script>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Food</title>
+    <style>
+      *{
+        font-family: "Sans-serif";
+      }
+      body{
+   background-image: url(https://planetarium.truman.edu/files/2017/10/Space-background.jpg);
+ }
+          #navbar {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 4%;
+        padding-right: 4%;
+        border: solid 1px black;
+        background-color: #cecece;
+ 
+
+      }
+
+      .options {
+        display: flex;
+        /* justify-content: space-between; */
+        list-style: none;
+      }
+      .options h3 {
+        padding-left: 30px;
+        padding-right: 10px;
+      }
+      #container{
+        /* background-color:black; */
+        padding:5vh;
+        display:grid;
+        grid-template-columns: 50vh 50vh 50vh;
+        grid-gap:3vh;
+        justify-content:space-around;
+      }
+      #container>div{
+        padding:5vh;
+        background-color:#cecece;
+        text-align:center;
+        border-radius: 5vh;
+      }
+      img{
+        height:50%;
+        width:90%;
+        border-radius: 2vh;
+
+      }
+      #header> a{
+        text-decoration:none;
+        color:black;
+      }
+      #selectTag{
+        padding:3vh;
+        width:200px;
+        margin-top : 5vh;
+        font-size:3vh;
+        text-align:center;
+      }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+   
+    <select name="" id="selectTag"></select>
+    <div id="container"></div>
+</body>
+</html>
+
+<script type="module">
+
+    import navbar from './componants/navbar.js';
+        let header = document.getElementById('header');
+        header.innerHTML = navbar()
+    
+    // https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood
+
+    let selectTag = document.getElementById('selectTag')
+
+
+    let cart = JSON.parse(localStorage.getItem('cart'));
+
+    if (cart === null){
+      localStorage.setItem('cart', JSON.stringify([]));
+    }
+
+
+    async function getdata(){
+      let res = await fetch(`https://www.themealdb.com/api/json/v1/1/categories.php`);
+      let data = await res.json();
+
+      JSON.parse(localStorage.getItem('cart'));
+      cart.push(data.categories);
+      insetOptins(data.categories)
+      localStorage.setItem('cart', JSON.stringify(data.categories));
+    }
+    getdata()
+
+   function insetOptins(data){
+     data.forEach(function(item){
+
+       let option = document.createElement('option');
+       option.innerHTML = `${item.strCategory}`
+       selectTag.append(option)
+     })
+   }
+   selectTag.addEventListener('change', fetch_by_option)
+
+    async function fetch_by_option(){
+      try{
+
+        let res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?c=${selectTag.value}`);
+        let data = await res.json();
+        display(data.meals)
+      }
+      catch(err){
+        console.log(err)
+      }
+   }
+
+   let container = document.getElementById('container');
+   const display = (data)=>{
+    //  console.log(data)
+
+    container.innerHTML = '';
+    data.forEach(function(item){
+      console.log(item)
+      let box = document.createElement('div');
+
+      let image = document.createElement('img');
+      image.src = item.strMealThumb;
+
+      let details = document.createElement('h3');
+      details.innerHTML = item.strMeal;
+
+      box.append(image,details);
+      container.append(box)
+
+    })
+   }
+</script>
